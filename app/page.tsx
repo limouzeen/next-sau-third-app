@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import bmrImg from "./images/bmi.png"; 
+import bmrImg from "./images/bmr.png"; 
 import carImg from "./images/installment.png"; 
 import calculatorImg from "./images/calculator.png";
 import moneyshareImg from "./images/money1.png";
