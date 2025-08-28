@@ -1,12 +1,51 @@
-// app/bmi/page.tsx
+'use client'
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import bmiImg from "../images/bmi.png"; // ปรับ path ให้ตรงกับโปรเจกต์ของคุณ
+import bmiImg from "../images/bmi.png";
 
 export default function BmiPage() {
+  const [weight, setWeight] = useState<string>("");
+  const [height, setHeight] = useState<string>("");
+  const [bmi, setBmi] = useState<string>("0.00");
+  const [error, setError] = useState<string>("");
+
+  const format = (n: number) =>
+    new Intl.NumberFormat("th-TH", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(n);
+
+  const calcBMI = () => {
+    setError("");
+    const w = parseFloat(weight);
+    const h = parseFloat(height);
+
+    if (!Number.isFinite(w) || w <= 0) {
+      setError("กรุณากรอกน้ำหนัก (kg) มากกว่า 0");
+      return;
+    }
+    if (!Number.isFinite(h) || h <= 0) {
+      setError("กรุณากรอกส่วนสูง (cm) มากกว่า 0");
+      return;
+    }
+
+    const heightM = h / 100;
+    const result = w / (heightM * heightM);
+
+    setBmi(format(result));
+  };
+
+  const reset = () => {
+    setWeight("");
+    setHeight("");
+    setBmi("0.00");
+    setError("");
+  };
+
   return (
     <main className="relative min-h-screen bg-neutral-50 text-neutral-900 flex flex-col items-center justify-center px-4 py-12">
-      {/* Back to Home (top-left, outside card) */}
+      {/* Back to Home */}
       <div className="absolute left-4 top-4 md:left-6 md:top-6">
         <Link
           href="/"
@@ -28,7 +67,7 @@ export default function BmiPage() {
           </svg>
           <span className="relative">
             กลับหน้าแรก
-            <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-blue-500 transition-all duration-300 group-hover:w-full" />
+            <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-amber-500 transition-all duration-300 group-hover:w-full" />
           </span>
         </Link>
       </div>
@@ -57,8 +96,14 @@ export default function BmiPage() {
           />
         </div>
 
-        {/* Form (no logic yet) */}
-        <form className="mt-6 space-y-4">
+        {/* Form */}
+        <form
+          className="mt-6 space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            calcBMI();
+          }}
+        >
           {/* Weight */}
           <div>
             <label className="block text-sm font-medium text-neutral-700">
@@ -66,6 +111,8 @@ export default function BmiPage() {
             </label>
             <input
               type="number"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
               placeholder="เช่น 65"
               className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-400/30"
             />
@@ -78,21 +125,31 @@ export default function BmiPage() {
             </label>
             <input
               type="number"
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
               placeholder="เช่น 170"
               className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-400/30"
             />
           </div>
 
+          {/* Error */}
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
           {/* Actions */}
           <div className="mt-4 flex flex-col gap-3">
             <button
-              type="button"
+              type="submit"
               className="w-full rounded-lg bg-amber-500 px-4 py-2 text-white font-medium shadow-sm transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               คำนวณ BMI
             </button>
             <button
               type="button"
+              onClick={reset}
               className="w-full rounded-lg border border-neutral-300 bg-neutral-100 px-4 py-2 text-neutral-800 font-medium shadow-sm transition-all hover:-translate-y-0.5 hover:bg-neutral-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-neutral-200"
             >
               รีเซ็ต
@@ -100,11 +157,11 @@ export default function BmiPage() {
           </div>
         </form>
 
-        {/* Result (static) */}
+        {/* Result */}
         <div className="mt-6 text-center">
           <p className="text-base font-medium text-neutral-800">
             ค่า BMI ที่คำนวณได้:{" "}
-            <span className="text-amber-500 font-semibold">0.00</span>
+            <span className="text-amber-500 font-semibold">{bmi}</span>
           </p>
         </div>
       </div>

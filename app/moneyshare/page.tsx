@@ -1,8 +1,41 @@
+'use client'
 import Image from "next/image";
 import Link from "next/link";
 import moneyshareImg from "../images/money1.png";
+import { useState } from "react";
+
 
 export default function MoneySharePage() {
+
+    const [money, setMoney] = useState('0.00');
+    const [people, setPeople] = useState('');
+    const [moneyShare, setMoneyShare] = useState('0.00');
+
+
+    const calculateMoneyShare = () => {
+  const totalMoney = parseFloat(money);
+  const totalPeople = parseInt(people, 10);
+
+  // validate amount
+  if (isNaN(totalMoney) || totalMoney <= 0) {
+    alert("⚠️ กรุณากรอกจำนวนเงินที่มากกว่า 0");
+    return;
+  }
+
+  // validate people
+  if (isNaN(totalPeople) || totalPeople <= 0) {
+    alert("⚠️ กรุณากรอกจำนวนคนที่มากกว่า 0");
+    return;
+  }
+
+  // คำนวณ
+  const moneyPerPerson = totalMoney / totalPeople;
+  setMoneyShare(moneyPerPerson.toFixed(2));
+};
+
+
+
+
   return (
     <main className="relative min-h-screen bg-neutral-50 text-neutral-900 flex flex-col items-center justify-center px-4 py-12">
       {/* Back to Home - top-left, outside card */}
@@ -65,6 +98,8 @@ export default function MoneySharePage() {
             </label>
             <input
               type="number"
+              value={money}
+              onChange={(e) => setMoney(e.target.value)}
               placeholder="เช่น 1000"
               className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-400/30"
             />
@@ -76,6 +111,8 @@ export default function MoneySharePage() {
             </label>
             <input
               type="number"
+              value={people}
+              onChange={(e) => setPeople(e.target.value)}
               placeholder="เช่น 5"
               className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-400/30"
             />
@@ -85,21 +122,23 @@ export default function MoneySharePage() {
         <div className="mt-6 flex flex-col gap-3">
           <button
             type="button"
+            onClick={calculateMoneyShare}
             className="w-full rounded-lg bg-amber-500 px-4 py-2 text-white font-medium shadow-sm transition-all hover:-translate-y-0.5 hover:bg-amber-600 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-amber-400"
           >
             คำนวณ
           </button>
-          <button
+          {/* <button
+          
             type="button"
             className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-neutral-700 font-medium shadow-sm transition-all hover:-translate-y-0.5 hover:bg-neutral-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-neutral-200"
           >
             ส่งข้อมูล
-          </button>
+          </button> */}
         </div>
 
         <div className="mt-6 text-center">
           <p className="text-base font-medium text-neutral-800">
-            หารกันคนละ <span className="text-amber-600">0.00</span> บาท
+            หารกันคนละ <span className="text-amber-600">{moneyShare}</span> บาท
           </p>
         </div>
       </div>
